@@ -1,0 +1,18 @@
+# tasks of token creation
+---
+- name: create HEC token
+  set_fact:
+    HECtoken: "{{ token_name | to_uuid }}"
+- name: create inputs.conf file
+  become: true
+  ini_file:
+    path: "/opt/splunk/etc/master-apps/{{ project_name }}/local/inputs.conf"
+    section: "http://{{ token_name }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    owner: splunk
+    group: splunk
+  with_items:
+    - {option: disabled, value: 0}
+    - {option: index, value: "{{ full_index }}"}
+    - {option: token, value: "{{ HECtoken }}"}

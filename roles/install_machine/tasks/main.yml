@@ -1,0 +1,16 @@
+# install_machine tasks
+---
+- name: create a user rookie
+  become: true
+  user:
+    name: rookie
+    shell: /bin/bash
+    append: yes
+    groups: wheel
+    comment: user for rookie
+-  name: make sure splunk is installed
+   become: yes
+   yum:
+     state: present
+     name: splunk
+

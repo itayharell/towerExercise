@@ -1,0 +1,32 @@
+# tasks for project creation
+---
+- name: create app in deployer and cluster master
+  become: true
+  file:
+    path: /opt/splunk/etc/{{ item }}/{{ project_name }}/local
+    state: directory
+    owner: splunk
+    group: splunk
+  with_items:
+    - "shcluster/apps"
+    - "master-apps"
+- name: create index
+  include_role:
+    name: index_create
+  vars:
+    index_name: "{{ project_name }}_logs"
+- name: create hec token
+  include_role:
+    name: token_create
+  vars:
+    token_name: "{{ project_name }}_token"
+- name: distrebute to search heads
+  run_once: true
+  become: true
+  become_user: splunk
+  shell: /opt/splunk/bin/splunk apply shcluster-bundle --answer-yes -target https://{{groups['searchheads'][0] }}:8089 -auth admin:{{ pass_for_splunk }}
+- name: distrebute to indexers
+  run_once: true
+  become: true
+  become_user: splunk
+  shell: /opt/splunk/bin/splunk apply cluster-bundle --answer-yes -target https://{{groups['indexers'][0] }}:8089 -auth admin:{{ pass_for_splunk }}

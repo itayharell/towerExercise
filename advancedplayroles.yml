@@ -1,0 +1,20 @@
+# advanced playbook - roles
+---
+- hosts: all
+  tasks:
+    - name: install machines
+      include_role:
+        name: install_machine
+- hosts: mgmt
+  pre_tasks: 
+    - name: verify project name is valid
+      fail:
+        msg: project_name is not defined
+      when: project_name is not defined
+  tasks:
+    - name: create project
+      include_role:
+        name: project_creation
+    - name: print results
+      debug:
+        msg: "Project Name: {{ project_name }}\nIndex Name: {{ full_index }}\nHEC token: {{ HECtoken }}"

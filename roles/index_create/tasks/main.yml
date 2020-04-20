@@ -1,0 +1,15 @@
+# tasks of index creation
+---
+- name: create index
+  set_fact:
+    full_index: "{{ index_name + '_' + index_name | to_uuid }}"
+- name: create indexes.conf file for deployer and cluster-master
+  include_tasks: add_index.yml
+  args:
+    apply:
+      become: true
+  loop:
+    - "shcluster/apps"
+    - "master-apps"
+  loop_control:
+    loop_var: destenation

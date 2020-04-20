@@ -1,0 +1,16 @@
+# add_index.yml
+---
+- name: create indexes.conf file
+  ini_file:
+    path: "/opt/splunk/etc/{{ destenation }}/{{ project_name }}/local/indexes.conf"
+    section: "{{ full_index }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    owner: splunk
+    group: splunk
+  with_items:
+    - {option: homePath, value: "$SPLUNK_DB/$_index_name/db"}
+    - {option: coldPath, value: "$SPLUNK_DB/$_index_name/colddb"}
+    - {option: thawedPath, value: "$SPLUNK_DB/$_index_name/thaweddb"}
+    - {option: datatype, value: "event"}
+    - {option: maxTotalDataSizeMB, value: 1000}
